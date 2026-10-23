@@ -23,7 +23,7 @@ This repository is published from [pixari/OpenTodo](https://github.com/pixari/Op
    /plugin install opentodo@opentodo
    ```
 
-   Claude Code asks for your server address (for example `https://todo.example.com`) and the token. The token is kept in your system's credential store, not in a file.
+   Claude Code asks for your server address (for example `https://todo.example.com`) and the token; if it doesn't, run `/plugin configure opentodo@opentodo`. The token is kept in your system's credential store, not in a file.
 
 Update with `/plugin marketplace update opentodo`.
 
