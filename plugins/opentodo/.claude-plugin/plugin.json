@@ -1,0 +1,30 @@
+{
+  "name": "opentodo",
+  "displayName": "OpenTodo",
+  "version": "0.10.0",
+  "description": "Connect Claude to your own OpenTodo server: read your tasks and, when you allow it, plan and change them, with every change in the task's history and undoable.",
+  "author": {
+    "name": "OpenTodo",
+    "url": "https://open-todo.app"
+  },
+  "homepage": "https://open-todo.app/docs/claude/",
+  "repository": "https://github.com/pixari/OpenTodo",
+  "privacyPolicyUrl": "https://github.com/pixari/opentodo-claude#privacy",
+  "license": "AGPL-3.0-only",
+  "keywords": ["tasks", "todo", "self-hosted", "mcp", "planning"],
+  "userConfig": {
+    "server_url": {
+      "type": "string",
+      "title": "OpenTodo server address",
+      "description": "The address you open OpenTodo at, such as https://todo.example.com (without /mcp).",
+      "required": true
+    },
+    "agent_token": {
+      "type": "string",
+      "title": "Agent token",
+      "description": "An agent token from Settings → Integrations → AI assistants (or a read-only token for an assistant that only looks).",
+      "required": true,
+      "sensitive": true
+    }
+  }
+}

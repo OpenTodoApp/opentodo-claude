@@ -1,0 +1,15 @@
+{
+  "name": "opentodo",
+  "description": "OpenTodo for Claude Code: connect Claude to your own OpenTodo server, with skills that use it safely.",
+  "owner": {
+    "name": "OpenTodo",
+    "url": "https://open-todo.app"
+  },
+  "plugins": [
+    {
+      "name": "opentodo",
+      "source": "./plugins/opentodo",
+      "description": "Read and plan your OpenTodo tasks from Claude Code through your server's MCP endpoint, with an agent token you control."
+    }
+  ]
+}
