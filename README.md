@@ -2,7 +2,7 @@
 
 A [Claude Code](https://code.claude.com) plugin that connects Claude to **your own** [OpenTodo](https://open-todo.app) server: it can read your tasks and, when you allow it, plan and change them. Every change it makes shows in the task's history, labelled as made by an AI assistant, and you can undo it there.
 
-This repository is published from [pixari/OpenTodo](https://github.com/pixari/OpenTodo/tree/main/deploy/claude-plugin) at each release. Please open issues and changes there.
+This repository is published from [OpenTodoApp/OpenTodo](https://github.com/OpenTodoApp/OpenTodo/tree/main/deploy/claude-plugin) at each release. Please open issues and changes there.
 
 ## What you get
 
@@ -19,7 +19,7 @@ This repository is published from [pixari/OpenTodo](https://github.com/pixari/Op
 3. In Claude Code:
 
    ```
-   /plugin marketplace add pixari/opentodo-claude
+   /plugin marketplace add OpenTodoApp/opentodo-claude
    /plugin install opentodo@opentodo
    ```
 
