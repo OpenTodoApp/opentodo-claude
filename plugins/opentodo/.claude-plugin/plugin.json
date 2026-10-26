@@ -8,8 +8,8 @@
     "url": "https://open-todo.app"
   },
   "homepage": "https://open-todo.app/docs/claude/",
-  "repository": "https://github.com/pixari/OpenTodo",
-  "privacyPolicyUrl": "https://github.com/pixari/opentodo-claude#privacy",
+  "repository": "https://github.com/OpenTodoApp/OpenTodo",
+  "privacyPolicyUrl": "https://github.com/OpenTodoApp/opentodo-claude#privacy",
   "license": "AGPL-3.0-only",
   "keywords": ["tasks", "todo", "self-hosted", "mcp", "planning"],
   "userConfig": {
