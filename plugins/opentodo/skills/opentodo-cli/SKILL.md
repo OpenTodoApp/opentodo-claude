@@ -9,13 +9,13 @@ OpenTodo is a self-hosted task manager. `ot` is its command-line client: every c
 
 ## Setup (once, done by the user)
 
-Ask the user for an **agent** token rather than a full-access one. They create it in Settings → AI → AI assistants or, when their own `ot` profile holds an admin token, with:
+Ask the user for an **agent** token rather than a full-access one. They create it in Settings → Integrations → AI assistants or, when their own `ot` profile holds an admin token, with:
 
 ```bash
 ot token create "my assistant" --scope agent
 ```
 
-An agent token can read everything the user can, and can create and edit tasks, projects, labels and comments, complete and reopen tasks, and move to the Trash only tasks it created itself. It cannot touch tokens, settings, sharing, members, encryption, imports or backups. Writes also need two switches the user controls (the owner's "AI assistants may make changes" and the user's "Allow AI assistants to make changes"). Then the user stores it:
+An agent token can read everything the user can, and can create and edit tasks, projects, sections, labels, comments, reminders and time entries, archive projects, complete and reopen tasks, and move to the Trash only tasks it created itself. It cannot touch tokens, settings, sharing, members, encryption, imports or backups. Writes also need two switches the user controls (the owner's "AI assistants may make changes" and the user's "Allow AI assistants to make changes"). Then the user stores it:
 
 ```bash
 ot auth set-token <token> --server https://todo.example.com
@@ -30,7 +30,7 @@ ot auth status
 2. **Read before you write.** Look first with `ot list --json`, `ot today --json`, `ot inbox --json`, `ot upcoming --json` or `ot project list --json`. Use full ids from that output, not titles. Commands act on the user's default workspace; `ot workspaces --json` lists the others, and `--workspace <name>` picks one for a command.
 3. **Preview first.** Before any write that touches more than one task, run it with `--dry-run` and check the `requests` and `targets` it prints. Nothing is changed by a dry run.
 4. **Prefer explicit flags.** Set rules and reminders with `--repeat` and `--remind` rather than `--natural`: the flags are validated exactly, while `--natural` guesses from free text and leaves anything it does not understand in the title.
-5. **Plan without forcing a due date.** A due date says "do it on that day"; not every task has one. Use `--start <date>` to defer a task until it matters, `--start someday` to park it, `--deadline <date>` for the day it must be finished by, `--evening` for This Evening and `--blocked-by <id>` when it waits for another task. `--location` takes a saved location's name or `lat,lon`. Parking keeps the due date; pass `--due none` too if you mean that.
+5. **Plan without forcing a due date.** A due date says "do it on that day"; not every task has one. Use `--start <date>` to defer a task until it matters, `--start someday` to park it, `--deadline <date>` for the day it must be finished by, `--evening` for This Evening and `--blocked-by <id>` when it waits for another task. `--sector this-week` (or `next-week`, `this-month`, `next-month`, `this-quarter`, `next-quarter`, or a period such as `2026-W45`) plans a task for a week, month or quarter without a date; `ot list --sector carried` lists those whose period has ended. `--location` takes a saved location's name or `lat,lon`. Parking keeps the due date; pass `--due none` too if you mean that.
 6. **Make creates retry-safe.** Pass `--idempotency-key <key>` to `ot add` and `ot project add`, with a key you derive from your own task (for example a short hash of the instruction and the title). Running the same command again with the same key returns the same task instead of creating a duplicate.
 7. **Prefer completing to deleting.** Use `ot done <id>` for finished work. `ot rm <id> --yes` moves a task to the Trash; an agent token may only do that for tasks it created. Destructive commands refuse without `--yes` when there is no terminal.
 8. **Stay in your lane.** Never run `ot token`, `ot auth` or `ot export` commands unless the user explicitly asked for exactly that. The same goes for `ot vault init`: it turns a folder into a Markdown vault that syncs both ways, and it needs a `full` token, which an agent token is not. Inside a vault the user already has, `ot vault status --json` is safe to read; editing its files is editing their tasks.
@@ -71,12 +71,35 @@ ot project add Garden --json --idempotency-key garden-1
 ot project rename Garden "Garden 2026" --json
 ot time start 8c2a41f0 --json
 ot time stop --json
+ot time status --json
 ot time log 8c2a41f0 1h30 --on yesterday --note "review" --json
 ot time list --from 2026-10-12 --to 2026-10-18 --json
 ot time export --from 2026-10-12 --to 2026-10-18 -o week.csv --json
 ```
 
-`ot time start` stops the running entry first (one runs at a time); `ot time stop` exits 1 when nothing runs. A duration logged on another day than today ends at 17:00 local time.
+Notes (standalone notes, and the notes of tasks and projects) are Markdown:
+
+```bash
+ot notes list --json
+ot notes search "plumber" --json
+ot notes show 3fa1c2d0 --json
+ot task note 8c2a41f0 --json
+ot notes append 3fa1c2d0 "- decided: ship Friday" --json
+ot task note 8c2a41f0 --append "- called, no answer" --json
+```
+
+The user's quarterly and weekly objectives are context for planning (a few short lines per period, at most 5 open; read them before proposing a week's plan):
+
+```bash
+ot objectives --json
+ot objectives --period 2026-W45 --json
+```
+
+Add, complete or edit objectives only when the user asks (`ot objectives add "<title>" --week --next`, `ot objectives done <id>`); a sixth open one in a period fails with `too_many_objectives` (exit 1).
+
+Prefer appending to replacing: an append adds text at the end and never overwrites what the user typed on another device. A replacement (`ot notes edit --body`, `ot task note --set`) fails with `body_changed` (exit 1) when the note changed since you read it; read it again before retrying, never retry blindly. Writing notes through `ot` needs a full token; with an agent token use the MCP note tools instead.
+
+`ot time start` stops the running entry first (one runs at a time), except with an agent token: then it fails with `timer_running` (exit 1) while another timer of the user runs, often a Focus session on their phone. **Never take over a running timer without asking**: tell the user which task it is on and let them stop it (`ot time stop` once they agree). `ot time log` is the safe way to record work you did beside them. `ot time stop` exits 1 when nothing runs. A duration logged on another day than today ends at 17:00 local time.
 
 `ot done` and `ot reopen` report each task with `status`; a task already in that state is `unchanged` and nothing is sent. `ot edit` with values equal to the current ones sends nothing.
 
