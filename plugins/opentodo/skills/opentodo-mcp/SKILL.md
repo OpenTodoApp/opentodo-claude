@@ -47,6 +47,7 @@ For context you may also read the resources `opentodo://views/today`, `opentodo:
    - `evening: true`: This Evening of its day.
    - `blocked_by`: ids of tasks it waits for.
    - `location`, `estimate_minutes`, `labels`, `priority` (1 is highest, 4 the default).
+   - `assignee`: who does it in a shared project, a member's name, email or account id, or `me`; `null` unassigns. Someone outside the project is refused.
    `create_tasks` takes these on each item; `update_tasks` changes them on existing tasks; `move_tasks` changes project or section; `complete_tasks` and `reopen_tasks` complete and reopen.
 5. **Make creates retry-safe.** Pass a `client_request_id` you derive from the request to `create_tasks`, `create_project`, `create_label` and `create_sections`. If a call times out, retry with the same value: you get the same ids back instead of duplicates.
 6. **Prefer completing to deleting.** Use `complete_tasks` for finished work. `trash_tasks` moves tasks to the Trash, where the user can restore them, and only accepts tasks created with this same token. Nothing is ever deleted permanently.
@@ -69,3 +70,4 @@ The server offers ready-made workflows as MCP prompts: `triage-inbox` (give ever
 
 - **Reminders.** `add_reminders` gives a task an alert for the user: `kind: "relative"` with `offset_minutes: 0` at the due time (or `-15` a quarter of an hour before), `"deadline"` before 09:00 on the deadline day, `"absolute"` with `at: {date, time}` at a fixed moment. `get_task` lists the task's reminders with their ids; change one with `update_reminders`, remove it with `remove_reminders`. They are the user's own; nobody else sees them.
 - **Time.** `log_time` records work already done (a Pomodoro worked beside the user), `start_timer` and `stop_timer` run a timer, `update_time_entries` fixes entries you created. **Never take over a running timer without asking:** when `start_timer` answers `timer_running`, a timer of the person runs (often a Focus session on their phone). Tell them which task it is on and call again with `stop_running: true` only after they say yes. You cannot delete tracked time or change what the person tracked.
+- **Today's focus.** `today_summary` returns `focus`, the up to three tasks the user picked for `focus_date` (their today). `set_today_focus` with up to three task ids, most important first, replaces it (`[]` clears it); it returns the ids placed. It replaces what the user picked, so propose the three tasks and set them only after a yes.
